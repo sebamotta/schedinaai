@@ -1,10 +1,18 @@
 
+import os
 from fastapi import FastAPI, Body
 from fastapi.middleware.cors import CORSMiddleware
 import joblib
 
 app = FastAPI()
-model = joblib.load("ai_model/schedina_model.pkl")
+
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "ai_model/schedina_model.pkl")
+
+try:
+    model = joblib.load(MODEL_PATH)
+except Exception as e:
+    print(f"Errore nel caricamento del modello: {e}")
+    model = None
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,13 +24,4 @@ app.add_middleware(
 
 @app.get("/")
 def root():
-    return {"message": "Backend attivo"}
-
-@app.post("/genera")
-def genera_schedina(
-    sport: str = Body(...),
-    importo: float = Body(...),
-    rischio: int = Body(...)
-):
-    pred = model.predict([[sport, importo, rischio]])
-    return {"schedina": pred.tolist()}
+    return {"message": "Backend attivo", "model_loaded": model is not None}
