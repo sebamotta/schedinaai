@@ -1,57 +1,43 @@
-
-import React, { useState } from 'react';
-import axios from 'axios';
+import { useState } from "react";
+import axios from "axios";
 
 function App() {
-  const [sport, setSport] = useState('calcio');
-  const [importo, setImporto] = useState(10);
-  const [rischio, setRischio] = useState(2);
-  const [schedina, setSchedina] = useState(null);
+  const [sport, setSport] = useState("");
+  const [importo, setImporto] = useState("");
+  const [rischio, setRischio] = useState("");
+  const [risultato, setRisultato] = useState(null);
 
-const generaSchedina = async () => {
-  try {
-    await axios.post(`${import.meta.env.VITE_BACKEND_URL}/genera`, {
-      sport,
-      importo,
-      rischio
-    });
-    console.log("Risposta completa:", res.data); // 👈 DEBUG
-    setSchedina(res.data.schedina);
-  } catch (err) {
-    console.error('Errore nella richiesta:', err);
-  }
-};
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/genera`,
+        {
+          sport,
+          importo: parseFloat(importo),
+          rischio: parseInt(rischio),
+        }
+      );
+      setRisultato(res.data.schedina || "Errore nella risposta");
+    } catch (err) {
+      console.error("Errore nella fetch:", err);
+      setRisultato("Errore nella comunicazione col backend");
+    }
+  };
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
-      <h1>SchedinaAI</h1>
-      <div>
-        <label>Sport: </label>
-        <input value={sport} onChange={(e) => setSport(e.target.value)} />
-      </div>
-      <div>
-        <label>Importo: </label>
-        <input
-          type="number"
-          value={importo}
-          onChange={(e) => setImporto(parseFloat(e.target.value))}
-        />
-      </div>
-      <div>
-        <label>Rischio: </label>
-        <input
-          type="number"
-          value={rischio}
-          onChange={(e) => setRischio(parseInt(e.target.value))}
-        />
-      </div>
-      <button onClick={generaSchedina} style={{ marginTop: '1rem' }}>
-        Genera schedina
-      </button>
-      {schedina && (
-        <div style={{ marginTop: '1rem' }}>
-          <strong>Schedina:</strong> {schedina.join(', ')}
+    <div>
+      <h1>Schedina AI</h1>
+      <form onSubmit={handleSubmit}>
+        <input placeholder="Sport" value={sport} onChange={(e) => setSport(e.target.value)} /><br />
+        <input type="number" placeholder="Importo" value={importo} onChange={(e) => setImporto(e.target.value)} /><br />
+        <input type="number" placeholder="Rischio" value={rischio} onChange={(e) => setRischio(e.target.value)} /><br />
+        <button type="submit">Genera</button>
+      </form>
+      {risultato && (
+        <div>
+          <h2>Schedina generata:</h2>
+          <pre>{JSON.stringify(risultato, null, 2)}</pre>
         </div>
       )}
     </div>
