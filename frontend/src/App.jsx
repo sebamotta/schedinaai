@@ -8,18 +8,20 @@ function App() {
   const [rischio, setRischio] = useState(2);
   const [schedina, setSchedina] = useState(null);
 
-  const generaSchedina = async () => {
-    try {
-      const res = await axios.post('http://localhost:8000/genera', {
-        sport,
-        importo,
-        rischio
-      });
-      setSchedina(res.data.schedina);
-    } catch (err) {
-      console.error('Errore nella richiesta:', err);
-    }
-  };
+const generaSchedina = async () => {
+  try {
+    const res = await axios.post('http://localhost:8000/genera', {
+      sport,
+      importo,
+      rischio
+    });
+    console.log("Risposta completa:", res.data); // 👈 DEBUG
+    setSchedina(res.data.schedina);
+  } catch (err) {
+    console.error('Errore nella richiesta:', err);
+  }
+};
+
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
