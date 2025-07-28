@@ -25,3 +25,9 @@ app.add_middleware(
 @app.get("/")
 def root():
     return {"message": "Backend attivo", "model_loaded": model is not None}
+
+@app.post("/genera")
+def genera_schedina(sport: str = Body(...), importo: float = Body(...), rischio: int = Body(...)):
+    print("Dati ricevuti:", sport, importo, rischio)
+    pred = model.predict([[sport, importo, rischio]])
+    return {"schedina": pred.tolist()}
