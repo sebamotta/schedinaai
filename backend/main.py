@@ -6,21 +6,15 @@ import joblib
 
 app = FastAPI()
 
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "ai_model/schedina_model.pkl")
-
-try:
-    model = joblib.load(MODEL_PATH)
-except Exception as e:
-    print(f"Errore nel caricamento del modello: {e}")
-    model = None
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # ✅ oppure specifica "http://localhost:5174"
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+model = joblib.load("ai_model/schedina_model.pkl")
 
 @app.get("/")
 def root():
@@ -28,6 +22,5 @@ def root():
 
 @app.post("/genera")
 def genera_schedina(sport: str = Body(...), importo: float = Body(...), rischio: int = Body(...)):
-    print("Dati ricevuti:", sport, importo, rischio)
     pred = model.predict([[sport, importo, rischio]])
     return {"schedina": pred.tolist()}
