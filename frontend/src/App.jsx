@@ -10,7 +10,7 @@ function App() {
 
 const generaSchedina = async () => {
   try {
-    const res = await axios.post('http://localhost:8000/genera', {
+    await axios.post(`${import.meta.env.VITE_BACKEND_URL}/genera`, {
       sport,
       importo,
       rischio
