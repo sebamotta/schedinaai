@@ -1,0 +1,29 @@
+name: CI/CD Backend
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install fastapi uvicorn scikit-learn pandas joblib
+
+      - name: Test backend
+        run: python -c "import pandas; import sklearn; print('Dependencies OK')"
+
+      - name: Trigger deploy hook
+        if: success()
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          method: GET
